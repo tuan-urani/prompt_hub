@@ -1,9 +1,10 @@
 enum PromptCategory {
   all('all'),
-  people('people'),
-  animals('animals'),
+  anime('anime'),
   fashion('fashion'),
-  sports('sports');
+  conceptArt('concept_art'),
+  portrait('portrait'),
+  renders3d('3d_renders');
 
   const PromptCategory(this.value);
 
@@ -12,19 +13,21 @@ enum PromptCategory {
   String get label {
     return switch (this) {
       PromptCategory.all => 'All',
-      PromptCategory.people => 'People',
-      PromptCategory.animals => 'Animals',
+      PromptCategory.anime => 'Anime',
       PromptCategory.fashion => 'Fashion',
-      PromptCategory.sports => 'Sports',
+      PromptCategory.conceptArt => 'Concept art',
+      PromptCategory.portrait => 'Portrait',
+      PromptCategory.renders3d => '3D/ Renders',
     };
   }
 
   static List<PromptCategory> get selectable => <PromptCategory>[
     all,
-    people,
-    animals,
+    anime,
     fashion,
-    sports,
+    conceptArt,
+    portrait,
+    renders3d,
   ];
 
   static PromptCategory fromValue(String? value) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:shareprompt/src/core/model/prompt_category.dart';
 import 'package:shareprompt/src/locale/locale_key.dart';
 import 'package:shareprompt/src/utils/app_assets.dart';
 import 'package:shareprompt/src/utils/app_colors.dart';
@@ -10,22 +11,16 @@ import 'package:shareprompt/src/utils/app_styles.dart';
 class DiscoverHeader extends StatelessWidget {
   const DiscoverHeader({
     super.key,
-    required this.selectedCategoryIndex,
+    required this.selectedCategory,
     required this.onCategorySelected,
   });
 
-  final int selectedCategoryIndex;
-  final ValueChanged<int> onCategorySelected;
+  final PromptCategory selectedCategory;
+  final ValueChanged<PromptCategory> onCategorySelected;
 
   @override
   Widget build(BuildContext context) {
-    final categories = <String>[
-      LocaleKey.categoryAll.tr,
-      LocaleKey.categoryFantasy.tr,
-      LocaleKey.categoryNature.tr,
-      LocaleKey.categoryPortrait.tr,
-      LocaleKey.categorySciFi.tr,
-    ];
+    final categories = PromptCategory.selectable;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
@@ -61,10 +56,11 @@ class DiscoverHeader extends StatelessWidget {
               itemCount: categories.length,
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (BuildContext context, int index) {
+                final category = categories[index];
                 return _CategoryChip(
-                  label: categories[index],
-                  isSelected: selectedCategoryIndex == index,
-                  onTap: () => onCategorySelected(index),
+                  label: _labelFor(category),
+                  isSelected: selectedCategory == category,
+                  onTap: () => onCategorySelected(category),
                 );
               },
             ),
@@ -72,6 +68,17 @@ class DiscoverHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _labelFor(PromptCategory category) {
+    return switch (category) {
+      PromptCategory.all => LocaleKey.categoryAll.tr,
+      PromptCategory.anime => LocaleKey.categoryAnime.tr,
+      PromptCategory.fashion => LocaleKey.categoryFashion.tr,
+      PromptCategory.conceptArt => LocaleKey.categoryConceptArt.tr,
+      PromptCategory.portrait => LocaleKey.categoryPortrait.tr,
+      PromptCategory.renders3d => LocaleKey.category3dRenders.tr,
+    };
   }
 }
 

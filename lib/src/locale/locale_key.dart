@@ -15,6 +15,9 @@ class LocaleKey {
   static const String discoverEmptyTitle = 'discover_empty_title';
   static const String discoverEmptyMessage = 'discover_empty_message';
   static const String categoryAll = 'category_all';
+  static const String categoryAnime = 'category_anime';
+  static const String categoryConceptArt = 'category_concept_art';
+  static const String category3dRenders = 'category_3d_renders';
   static const String categoryPeople = 'category_people';
   static const String categoryAnimals = 'category_animals';
   static const String categoryFantasy = 'category_fantasy';

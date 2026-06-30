@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:shareprompt/src/core/model/prompt_category.dart';
 import 'package:shareprompt/src/locale/locale_key.dart';
 import 'package:shareprompt/src/ui/base/interactor/page_states.dart';
 import 'package:shareprompt/src/ui/home/bloc/home_bloc.dart';
@@ -25,7 +26,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final HomeBloc _bloc;
   final ScrollController _scrollController = ScrollController();
-  int _selectedCategoryIndex = 0;
 
   @override
   void initState() {
@@ -72,10 +72,9 @@ class _HomePageState extends State<HomePage> {
                   return Column(
                     children: <Widget>[
                       DiscoverHeader(
-                        selectedCategoryIndex: _selectedCategoryIndex,
-                        onCategorySelected: (int index) {
-                          setState(() => _selectedCategoryIndex = index);
-                        },
+                        selectedCategory: state.selectedCategory,
+                        onCategorySelected: (PromptCategory category) =>
+                            _bloc.selectCategory(category),
                       ),
                       const SizedBox(height: 12),
                       Expanded(

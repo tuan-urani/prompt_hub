@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:shareprompt/src/core/model/prompt.dart';
+import 'package:shareprompt/src/core/model/prompt_category.dart';
 import 'package:shareprompt/src/core/repository/prompt_repository.dart';
 import 'package:shareprompt/src/ui/base/interactor/page_states.dart';
 
@@ -10,6 +11,7 @@ class HomeState extends Equatable {
     this.status = PageState.initial,
     this.prompts = const <Prompt>[],
     this.searchQuery = '',
+    this.selectedCategory = PromptCategory.all,
     this.hasMore = true,
     this.isLoadingMore = false,
     this.errorMessage,
@@ -18,6 +20,7 @@ class HomeState extends Equatable {
   final PageState status;
   final List<Prompt> prompts;
   final String searchQuery;
+  final PromptCategory selectedCategory;
   final bool hasMore;
   final bool isLoadingMore;
   final String? errorMessage;
@@ -26,6 +29,7 @@ class HomeState extends Equatable {
     PageState? status,
     List<Prompt>? prompts,
     String? searchQuery,
+    PromptCategory? selectedCategory,
     bool? hasMore,
     bool? isLoadingMore,
     String? errorMessage,
@@ -35,6 +39,7 @@ class HomeState extends Equatable {
       status: status ?? this.status,
       prompts: prompts ?? this.prompts,
       searchQuery: searchQuery ?? this.searchQuery,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
@@ -46,6 +51,7 @@ class HomeState extends Equatable {
     status,
     prompts,
     searchQuery,
+    selectedCategory,
     hasMore,
     isLoadingMore,
     errorMessage,
@@ -68,6 +74,7 @@ class HomeBloc extends Cubit<HomeState> {
         page: _page,
         pageSize: _pageSize,
         query: state.searchQuery,
+        category: state.selectedCategory,
       );
       emit(
         state.copyWith(
@@ -94,6 +101,11 @@ class HomeBloc extends Cubit<HomeState> {
     await loadInitial();
   }
 
+  Future<void> selectCategory(PromptCategory category) async {
+    emit(state.copyWith(selectedCategory: category));
+    await loadInitial();
+  }
+
   Future<void> loadMore() async {
     if (!state.hasMore ||
         state.isLoadingMore ||
@@ -108,6 +120,7 @@ class HomeBloc extends Cubit<HomeState> {
         page: nextPage,
         pageSize: _pageSize,
         query: state.searchQuery,
+        category: state.selectedCategory,
       );
       _page = nextPage;
       emit(

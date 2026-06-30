@@ -23,7 +23,7 @@ class ProfileEmptyState extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         const _ProfileEmptyIcon(),
-        26.height,
+        16.height,
         Text(
           title,
           textAlign: TextAlign.center,
@@ -58,8 +58,8 @@ class _ProfileEmptyIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      width: 88,
-      height: 88,
+      width: 66,
+      height: 66,
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
@@ -67,12 +67,12 @@ class _ProfileEmptyIcon extends StatelessWidget {
             child: Icon(
               Icons.feed_outlined,
               color: AppColors.profileEmptyIcon,
-              size: 84,
+              size: 66,
             ),
           ),
           Positioned(
             top: -4,
-            right: 4,
+            right: -4,
             child: Icon(
               Icons.auto_awesome,
               color: AppColors.primaryLight,

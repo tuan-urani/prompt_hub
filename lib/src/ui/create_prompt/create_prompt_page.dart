@@ -132,7 +132,7 @@ class _CreatePromptPageState extends State<CreatePromptPage> {
     if (Get.isRegistered<HomeBloc>()) {
       Get.find<HomeBloc>().refresh();
     }
-    Get.back();
+    Get.back(result: true);
     unawaited(
       Future<void>.delayed(const Duration(milliseconds: 180)).then((_) {
         final context = Get.overlayContext ?? Get.context;

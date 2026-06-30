@@ -40,9 +40,7 @@ class PromptImageView extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        placeholderFadeInDuration: Duration.zero,
+        cacheKey: url!,
         placeholder: (_, _) => ColoredBox(color: placeholderColor),
         errorWidget: (_, _, _) => ColoredBox(
           color: placeholderColor,

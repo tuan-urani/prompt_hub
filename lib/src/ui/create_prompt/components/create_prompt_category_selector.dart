@@ -78,10 +78,11 @@ class CreatePromptCategorySelector extends StatelessWidget {
   String _labelFor(PromptCategory category) {
     return switch (category) {
       PromptCategory.all => LocaleKey.categoryAll.tr,
-      PromptCategory.people => LocaleKey.categoryPeople.tr,
-      PromptCategory.animals => LocaleKey.categoryAnimals.tr,
+      PromptCategory.anime => LocaleKey.categoryAnime.tr,
       PromptCategory.fashion => LocaleKey.categoryFashion.tr,
-      PromptCategory.sports => LocaleKey.categorySports.tr,
+      PromptCategory.conceptArt => LocaleKey.categoryConceptArt.tr,
+      PromptCategory.portrait => LocaleKey.categoryPortrait.tr,
+      PromptCategory.renders3d => LocaleKey.category3dRenders.tr,
     };
   }
 }

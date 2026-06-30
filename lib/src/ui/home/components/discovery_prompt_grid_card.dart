@@ -15,7 +15,6 @@ class DiscoveryPromptGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('re-render');
     return GestureDetector(
       onTap:
           onTap ??

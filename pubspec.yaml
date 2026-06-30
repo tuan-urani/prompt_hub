@@ -96,8 +96,7 @@ flutter:
   assets:
     - .env
     - assets/images/
-    - seed/image.png
-    - seed/prompt.md
+    - seed/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

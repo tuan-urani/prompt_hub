@@ -20,17 +20,17 @@ class PromptHubSeedService {
     );
     if (existingPrompts.isNotEmpty) return;
 
-    final promptText = await rootBundle.loadString('seed/prompt.md');
-    final imageData = await rootBundle.load('seed/image.png');
+    final promptText = await rootBundle.loadString('seed/portrait/prompt.md');
+    final imageData = await rootBundle.load('seed/portrait/image/1.png');
     await _promptRepository.createPrompt(
       userId: userId,
       draft: PromptDraft(
         title: 'Hands in Pockets',
         platform: 'OpenAI',
         prompt: promptText.trim(),
-        category: PromptCategory.people,
+        category: PromptCategory.portrait,
         imageBytes: imageData.buffer.asUint8List(),
-        imageFileName: 'seed.png',
+        imageFileName: '1.png',
       ),
     );
 

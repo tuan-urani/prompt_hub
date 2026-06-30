@@ -42,29 +42,47 @@ class PromptRepository {
     required int page,
     required int pageSize,
     String query = '',
+    PromptCategory category = PromptCategory.all,
   }) async {
     final from = page * pageSize;
     final to = from + pageSize - 1;
     final trimmedQuery = query.trim();
-    dynamic request = _client
-        .from('prompts')
-        .select('*, profiles!prompts_user_id_profiles_fkey(username)')
-        .order('created_at', ascending: false)
-        .range(from, to);
+    final escaped = _escapeSearch(trimmedQuery);
+    final data = switch ((trimmedQuery.isNotEmpty, category)) {
+      (true, PromptCategory.all) =>
+        await _client
+            .from('prompts')
+            .select('*, profiles!prompts_user_id_profiles_fkey(username)')
+            .or(
+              'title.ilike.%$escaped%,prompt.ilike.%$escaped%,platform.ilike.%$escaped%',
+            )
+            .order('created_at', ascending: false)
+            .range(from, to),
+      (true, _) =>
+        await _client
+            .from('prompts')
+            .select('*, profiles!prompts_user_id_profiles_fkey(username)')
+            .or(
+              'title.ilike.%$escaped%,prompt.ilike.%$escaped%,platform.ilike.%$escaped%',
+            )
+            .eq('category', category.value)
+            .order('created_at', ascending: false)
+            .range(from, to),
+      (false, PromptCategory.all) =>
+        await _client
+            .from('prompts')
+            .select('*, profiles!prompts_user_id_profiles_fkey(username)')
+            .order('created_at', ascending: false)
+            .range(from, to),
+      (false, _) =>
+        await _client
+            .from('prompts')
+            .select('*, profiles!prompts_user_id_profiles_fkey(username)')
+            .eq('category', category.value)
+            .order('created_at', ascending: false)
+            .range(from, to),
+    };
 
-    if (trimmedQuery.isNotEmpty) {
-      final escaped = _escapeSearch(trimmedQuery);
-      request = _client
-          .from('prompts')
-          .select('*, profiles!prompts_user_id_profiles_fkey(username)')
-          .or(
-            'title.ilike.%$escaped%,prompt.ilike.%$escaped%,platform.ilike.%$escaped%',
-          )
-          .order('created_at', ascending: false)
-          .range(from, to);
-    }
-
-    final data = await request as List<dynamic>;
     return _withSavedState(
       data
           .cast<Map<String, dynamic>>()
@@ -99,17 +117,30 @@ class PromptRepository {
   }
 
   Future<List<Prompt>> fetchSavedPrompts(String userId) async {
-    final data = await _client
+    final savedRows = await _client
         .from('prompt_saves')
-        .select('prompts(*, profiles!prompts_user_id_profiles_fkey(username))')
+        .select('prompt_id')
         .eq('user_id', userId)
         .order('created_at', ascending: false);
-    return data
+
+    final savedIds = savedRows
         .cast<Map<String, dynamic>>()
-        .map((Map<String, dynamic> row) => row['prompts'])
-        .whereType<Map<String, dynamic>>()
-        .map(Prompt.fromJson)
-        .map((Prompt prompt) => prompt.copyWith(isSaved: true))
+        .map((Map<String, dynamic> row) => row['prompt_id'] as String)
+        .toList(growable: false);
+    if (savedIds.isEmpty) return const <Prompt>[];
+
+    final data = await _client
+        .from('prompts')
+        .select('*, profiles!prompts_user_id_profiles_fkey(username)')
+        .inFilter('id', savedIds);
+    final promptsById = <String, Prompt>{
+      for (final row in data.cast<Map<String, dynamic>>())
+        row['id'] as String: Prompt.fromJson(row).copyWith(isSaved: true),
+    };
+
+    return savedIds
+        .map((String id) => promptsById[id])
+        .whereType<Prompt>()
         .toList(growable: false);
   }
 

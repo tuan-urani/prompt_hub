@@ -220,13 +220,13 @@ class _PreviewOwnerMenu extends StatelessWidget {
       icon: const _CircleOverlayButton(icon: Icons.more_horiz_rounded),
       onSelected: (String value) async {
         if (value == 'edit') {
-          Navigator.pop(context);
           final changed = await Get.toNamed(
             AppPages.editPrompt,
             arguments: <String, dynamic>{'id': prompt.id},
           );
           if (changed == true) {
             Get.find<HomeBloc>().refresh();
+            if (context.mounted) Navigator.pop(context, true);
           }
           return;
         }

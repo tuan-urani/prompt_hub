@@ -14,7 +14,6 @@ import 'package:shareprompt/src/ui/profile/components/profile_header_card.dart';
 import 'package:shareprompt/src/ui/profile/components/profile_stats_tabs.dart';
 import 'package:shareprompt/src/ui/home/components/discovery_prompt_grid_card.dart';
 import 'package:shareprompt/src/ui/home/components/prompt_preview_modal.dart';
-import 'package:shareprompt/src/ui/widgets/base/toast/app_toast.dart';
 import 'package:shareprompt/src/utils/app_colors.dart';
 import 'package:shareprompt/src/utils/app_pages.dart';
 import 'package:shareprompt/src/utils/app_styles.dart';
@@ -65,12 +64,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         children: <Widget>[
                           ProfileHeaderCard(
-                            username: state.profile?.username ?? 'user',
-                            postsCount: state.prompts.length,
-                            savedCount: state.savedPrompts.length,
-                            onEditUsername: () => _editUsername(context, state),
                             onBackTap: () => Navigator.pop(context),
-                            onSettingsTap: () => Get.toNamed(AppPages.settings),
+                            onSettingsTap: () async {
+                              final changed = await Get.toNamed(
+                                AppPages.settings,
+                              );
+                              if (changed == true) {
+                                await _bloc.loadProfile();
+                              }
+                            },
                           ),
                           0.height,
                           ProfileStatsTabs(
@@ -84,7 +86,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
                     Expanded(
                       child: RefreshIndicator(
                         color: AppColors.primaryLight,
@@ -169,7 +170,12 @@ class _ProfilePageState extends State<ProfilePage> {
               title: LocaleKey.profileNoPostsTitle.tr,
               message: LocaleKey.profileNoPostsMessage.tr,
               actionLabel: LocaleKey.createPromptTitle.tr,
-              onAction: () => Get.toNamed(AppPages.createPrompt),
+              onAction: () async {
+                final changed = await Get.toNamed(AppPages.createPrompt);
+                if (changed == true) {
+                  await _bloc.loadProfile();
+                }
+              },
             ),
           ),
         ),
@@ -194,41 +200,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     };
-  }
-
-  Future<void> _editUsername(BuildContext context, ProfileState state) async {
-    final controller = TextEditingController(text: state.profile?.username);
-    final username = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(LocaleKey.profileEditUsername.tr),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: LocaleKey.profileUsernameHint.tr,
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(LocaleKey.cancel.tr),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(LocaleKey.save.tr),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (username == null || username.isEmpty) return;
-    try {
-      await _bloc.updateUsername(username);
-      showSuccessToast(LocaleKey.success.tr);
-    } catch (error) {
-      showErrorToast(error.toString());
-    }
   }
 
   Future<void> _openPromptPreview(BuildContext context, Prompt prompt) async {

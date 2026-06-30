@@ -7,6 +7,7 @@ import 'package:shareprompt/src/core/repository/auth_repository.dart';
 import 'package:shareprompt/src/core/repository/prompt_repository.dart';
 import 'package:shareprompt/src/locale/locale_key.dart';
 import 'package:shareprompt/src/ui/base/interactor/page_states.dart';
+import 'package:shareprompt/src/ui/home/bloc/home_bloc.dart';
 import 'package:shareprompt/src/ui/prompt_detail/bloc/prompt_detail_bloc.dart';
 import 'package:shareprompt/src/ui/widgets/base/toast/app_toast.dart';
 import 'package:shareprompt/src/ui/widgets/prompt_image_view.dart';
@@ -128,11 +129,17 @@ class _DetailContent extends StatelessWidget {
                                     },
                                   );
                                   if (changed == true) {
-                                    bloc.loadPrompt(prompt.id);
+                                    await bloc.loadPrompt(prompt.id);
+                                    if (Get.isRegistered<HomeBloc>()) {
+                                      Get.find<HomeBloc>().refresh();
+                                    }
                                   }
                                 },
                                 onDelete: () async {
                                   await bloc.deletePrompt();
+                                  if (Get.isRegistered<HomeBloc>()) {
+                                    Get.find<HomeBloc>().refresh();
+                                  }
                                   if (context.mounted) {
                                     Navigator.pop(context, true);
                                   }

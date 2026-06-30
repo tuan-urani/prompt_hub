@@ -34,14 +34,14 @@ class ProfileStatsTabs extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: _ProfileTabButton(
-                  label: LocaleKey.profilePosts.tr,
+                  label: '${LocaleKey.profilePosts.tr}($postsCount)',
                   isSelected: selectedTab == ProfileTab.posts,
                   onTap: () => onTabChanged(ProfileTab.posts),
                 ),
               ),
               Expanded(
                 child: _ProfileTabButton(
-                  label: LocaleKey.profileSaved.tr,
+                  label: '${LocaleKey.profileSaved.tr}($savedCount)',
                   isSelected: selectedTab == ProfileTab.saved,
                   onTap: () => onTabChanged(ProfileTab.saved),
                 ),
@@ -80,7 +80,7 @@ class _ProfileTabButton extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppStyles.bodyMedium(
+                style: AppStyles.bodyLarge(
                   color: isSelected
                       ? AppColors.primaryLight
                       : AppColors.profileMutedText,

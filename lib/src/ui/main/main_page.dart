@@ -4,11 +4,13 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:shareprompt/src/core/repository/prompt_repository.dart';
 import 'package:shareprompt/src/core/repository/share_link_repository.dart';
 import 'package:shareprompt/src/core/service/appsflyer/appsflyer_service.dart';
+import 'package:shareprompt/src/ui/home/bloc/home_bloc.dart';
+import 'package:shareprompt/src/ui/home/components/prompt_preview_modal.dart';
 import 'package:shareprompt/src/ui/home/home_page.dart';
 import 'package:shareprompt/src/utils/app_colors.dart';
-import 'package:shareprompt/src/utils/app_pages.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,6 +22,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final AppLinks _appLinks = AppLinks();
   late final ShareLinkRepository _shareLinkRepository;
+  late final PromptRepository _promptRepository;
   late final AppsFlyerService _appsFlyerService;
   StreamSubscription<Uri>? _linkSubscription;
   StreamSubscription<String>? _appsFlyerSubscription;
@@ -30,6 +33,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _shareLinkRepository = Get.find<ShareLinkRepository>();
+    _promptRepository = Get.find<PromptRepository>();
     _appsFlyerService = Get.find<AppsFlyerService>();
     _listenForLinks();
   }
@@ -55,7 +59,7 @@ class _MainPageState extends State<MainPage> {
     _openPromptId(promptId);
   }
 
-  void _openPromptId(String promptId) {
+  Future<void> _openPromptId(String promptId) async {
     final now = DateTime.now();
     final lastOpenedAt = _lastOpenedAt;
     if (_lastOpenedPromptId == promptId &&
@@ -65,10 +69,18 @@ class _MainPageState extends State<MainPage> {
     }
     _lastOpenedPromptId = promptId;
     _lastOpenedAt = now;
-    Get.toNamed(
-      AppPages.promptDetail,
-      arguments: <String, dynamic>{'id': promptId},
+    final prompt = await _promptRepository.fetchPrompt(promptId);
+    if (prompt == null || !mounted) return;
+    await Future<void>.delayed(Duration.zero);
+    final context = Get.overlayContext ?? Get.context;
+    if (context == null || !context.mounted) return;
+    final shouldRefresh = await showPromptPreviewModal(
+      context: context,
+      prompt: prompt,
     );
+    if (shouldRefresh == true && Get.isRegistered<HomeBloc>()) {
+      Get.find<HomeBloc>().refresh();
+    }
   }
 
   @override

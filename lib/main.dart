@@ -16,6 +16,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20;
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.splash,
